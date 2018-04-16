@@ -7,17 +7,11 @@
 
 ## Installation
 
- - Required: Python 3.x, pip, PostgreSQL
+ - Required: Python 3.x, pip
  - Create virtualenv
  - Clone this repo
  - `pip install --upgrade -r requirements.txt`
 
-## Database setup
- - Store database URL in environment variable.
- ```
- export TELEGRAM_BOT_POSTGRES_URL="postgresql://<user>:<password>@localhost:5432/<databasename>"
- ```
- - Run: `python model.py` to setup the DB tables.
 
 ## Setup
 
