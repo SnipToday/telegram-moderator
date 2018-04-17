@@ -104,6 +104,7 @@ class TelegramMonitorBot:
         full_name = (update.message.from_user.first_name + " " + update.message.from_user.last_name)
         user_name = update.message.from_user.username
 
+        logger.info('Checking new message: {}'.format(message))
         if self.message_ban_re and self.message_ban_re.search(message):
             # Logging
             log_message = "Ban message from: {} - {}, match: {}".format(user_name, full_name, update.message.text.encode('utf-8'))
