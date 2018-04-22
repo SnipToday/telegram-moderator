@@ -10,13 +10,44 @@ This bot logs all messages sent in a Telegram Group to a database.
 """
 
 import logging
+from logging.config import dictConfig
+from logging.handlers import RotatingFileHandler
+
 from telegram.ext import Updater, MessageHandler, Filters
 import os
 import re
 from mwt import MWT
 
+handlers = {
+            "console": {
+                "class": "logging.StreamHandler",
+                "level": "DEBUG",
+                "formatter": "f"
+            },
+
+            "file_handler": {
+                "class": "logging.handlers.RotatingFileHandler",
+                "level": "INFO",
+                "formatter": "f",
+                "filename": '../bot_log.log',
+                "maxBytes": 10485760,
+                "backupCount": 2,
+                "encoding": "utf8"
+            },
+}
+logging_config = dict(version=1,
+    formatters={
+        'f': {'format': '%(asctime)s - %(name)s - %(levelname)s - %(message)s'}
+        },
+    handlers=handlers,
+    root={
+        'handlers': ['console', 'file_handler'],
+        'level': logging.DEBUG,
+        },
+)
+dictConfig(logging_config)
+
 logger = logging.getLogger(__name__)
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 
 class TelegramMonitorBot:
@@ -118,7 +149,6 @@ class TelegramMonitorBot:
             # Ban the user
             self.ban_user(update)
 
-
         elif self.message_hide_re and self.message_hide_re.search(message):
             # Logging
             log_message = "Hide message from: {} - {}, match: {}".format(user_name, full_name,
@@ -131,7 +161,8 @@ class TelegramMonitorBot:
                     text=log_message)
             # Delete the message
             update.message.delete()
-
+        else:
+            logger.info('Message OK: {}'.format(message[:20]))
 
 
     def msg_handler(self, bot, update):
@@ -140,7 +171,9 @@ class TelegramMonitorBot:
             user = update.message.from_user
 
             # Limit bot to monitoring certain chats
+            logger.info('message: {}, chat_id: {}'.format(update.message.text[:20], update.message.chat_id))
             if update.message.chat_id not in self.chat_ids:
+                logger.info('ignoring message: {}'.format(update.message.text[:20]))
                 return
 
             if (self.debug or
