@@ -132,8 +132,11 @@ class TelegramMonitorBot:
         """ Test message for security violations """
 
         message = update.message.text
-        full_name = (update.message.from_user.first_name + " " + update.message.from_user.last_name)
         user_name = update.message.from_user.username
+        try:
+            full_name = update.message.from_user.full_name
+        except Exception as e:
+            full_name = user_name
 
         logger.info('Checking new message: {}'.format(message))
         if self.message_ban_re and self.message_ban_re.search(message):
@@ -179,7 +182,7 @@ class TelegramMonitorBot:
             if (self.debug or
                 update.message.from_user.id not in self.get_admin_ids(bot, update.message.chat_id)):
                 # Security checks
-                self.security_check_username(bot, update)
+                # self.security_check_username(bot, update)
                 self.security_check_message(bot, update)
             else:
                 logger.info("Skipping checks. User is admin: {}".format(user.id))

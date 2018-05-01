@@ -1,1 +1,1 @@
-python-telegram-bot==9.0.0
+python-telegram-bot==10.0.2
